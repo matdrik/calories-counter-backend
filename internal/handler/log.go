@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	calories_counter_backend "server"
 	"strconv"
@@ -60,14 +59,10 @@ func (h *Handler) getAllLogs(c *gin.Context) {
 		return
 	}
 
-	//logrus.Printf("input %s", date)
-
 	c.JSON(http.StatusOK, getAllListResponse{Data: data})
 }
 
 func (h *Handler) getLogById(c *gin.Context) {
-	logrus.Print("getLogById")
-
 	userId, err := getUserId(c)
 	if err != nil {
 		return

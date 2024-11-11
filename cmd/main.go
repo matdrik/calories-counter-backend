@@ -58,7 +58,7 @@ func main() {
 		logrus.Errorf("Ошибка при остановке сервера: %v", err.Error())
 	}
 
-	if err := db.Close(); err != nil {
+	if err := db.Close(context.Background()); err != nil {
 		logrus.Errorf("Ошибка при закрытии соединения БД: %v", err.Error())
 	}
 }

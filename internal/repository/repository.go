@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5"
 	calories_counter_backend "server"
 )
 
@@ -28,7 +28,7 @@ type Repository struct {
 	Food
 }
 
-func NewRepository(db *sqlx.DB) *Repository {
+func NewRepository(db *pgx.Conn) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
 		Log:           NewLogPostgres(db),

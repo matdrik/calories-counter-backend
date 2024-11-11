@@ -1,24 +1,37 @@
 package repository
 
 import (
+	"context"
 	"fmt"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5"
 	calories_counter_backend "server"
 )
 
 type FoodPostgres struct {
-	db *sqlx.DB
+	db *pgx.Conn
 }
 
-func NewFoodPostgres(db *sqlx.DB) *FoodPostgres {
+func NewFoodPostgres(db *pgx.Conn) *FoodPostgres {
 	return &FoodPostgres{db: db}
 }
 
 func (r *FoodPostgres) GetAll() ([]calories_counter_backend.FoodResponse, error) {
-	var list = make([]calories_counter_backend.FoodResponse, 0)
+	var data = make([]calories_counter_backend.FoodResponse, 0)
 
-	query := fmt.Sprintf("SELECT ft.id, ft.name, ft.carbs, ft.calories, ft.fat, ft.protein FROM %s ft", FoodTable)
-	err := r.db.Select(&list, query)
+	query := fmt.Sprintf("SELECT ft.id, ft.name, ft.calories, ft.protein, ft.fat, ft.carbs FROM %s ft", FoodTable)
+	rows, err := r.db.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
 
-	return list, err
+	for rows.Next() {
+		var item calories_counter_backend.FoodResponse
+		err = rows.Scan(
+			&item.ID, &item.Name, &item.Calories, &item.Protein, &item.Fat, &item.Carbs)
+		if err != nil {
+			return nil, err
+		}
+		data = append(data, item)
+	}
+	return data, err
 }
