@@ -1,0 +1,5 @@
+DROP TABLE logs;
+DROP TABLE food;
+DROP TABLE meals;
+DROP TABLE users;
+DROP TABLE roles;
