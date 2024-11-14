@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"server/internal/middleware"
 	"server/internal/service"
+	ws "server/internal/ws"
 )
 
 type Handler struct {
@@ -14,10 +15,15 @@ func NewHandler(services *service.Service) *Handler {
 	return &Handler{services: services}
 }
 
-func (h *Handler) Init() *gin.Engine {
+func (h *Handler) Init(hub *ws.Hub) *gin.Engine {
 	router := gin.New()
 
 	router.Use(middleware.Cors())
+
+	websockets := router.Group("/ws")
+	{
+		websockets.GET("/", ws.HandleWebSocket(hub))
+	}
 
 	auth := router.Group("/auth")
 	{

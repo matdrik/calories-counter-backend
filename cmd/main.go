@@ -11,6 +11,7 @@ import (
 	"server/internal/handler"
 	"server/internal/repository"
 	"server/internal/service"
+	"server/internal/ws"
 	"syscall"
 )
 
@@ -39,11 +40,23 @@ func main() {
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
+	hub := ws.NewHub()
+	go hub.Run()
+
+	//router := gin.Default()
+	//router.GET("/ws", ws.HandleWebSocket(hub))
+
+	//fmt.Println("Gin server started at :8080")
+	//if err := router.Run(":8080"); err != nil {
+	//	log.Fatalf("Server failed: %v", err)
+	//}
+
 	server := new(caloriescounterbackend.Server)
 	go func() {
-		if err := server.Run(viper.GetString("port"), handlers.Init()); err != nil {
+		if err := server.Run(viper.GetString("port"), handlers.Init(hub)); err != nil {
 			logrus.Fatalf("Ошибка при выполнении http-сервера: %v", err.Error())
 		}
+
 	}()
 
 	logrus.Print("calories-counter-backend запущено")
